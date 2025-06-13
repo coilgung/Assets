@@ -102,6 +102,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   color: {fileID: 11400000, guid: 87b31a3f7a9bcd4fcb1d8733cd9e4e2c, type: 2}
+  cam: {fileID: 0}
 --- !u!61 &7691315863023484235
 BoxCollider2D:
   m_ObjectHideFlags: 0

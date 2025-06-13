@@ -11,6 +11,8 @@ public class PlayerScript : MonoBehaviour
     public bool turn;
     public EventManagerScript manager;
 
+    Transform selected;
+
     void Start()
     {
 
@@ -29,6 +31,22 @@ public class PlayerScript : MonoBehaviour
     {
         VisualizeHand(hand, 6, turn);
         VisualizeHand(prep, 6);
+        if (selected == null || !turn)
+        {
+            return;
+        }
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (transform.position.x - Input.mousePosition.x < 0)
+            {
+                Place(selected, prep.childCount);
+                selected = null;
+                return;
+            }
+            Place(selected, 0);
+            selected = null;
+            return;
+        }
     }
 
     void VisualizeHand(Transform holder, int minWidth, bool visible = true)
@@ -38,11 +56,16 @@ public class PlayerScript : MonoBehaviour
         for (int i = 0; i < holdLen; i++)
         {
             holder.GetChild(i).position = new Vector3(
-                (holder.position.x - width / 2 + width / holdLen * ((float)i + ((holdLen%2==0) ? 0.5f : 0f))) * Mathf.Max(minWidth, holdLen) / 4, holder.position.y, holder.position.z
+                (holder.position.x - width / 2 + width / holdLen * ((float)i + ((holdLen % 2 == 0) ? 0.5f : 0f))) * Mathf.Max(minWidth, holdLen) / 4, holder.position.y, holder.position.z
             );
             holder.GetChild(i).GetComponent<SpriteRenderer>().enabled = visible;
             holder.GetChild(i).GetComponent<SpriteRenderer>().sortingOrder = i;
         }
+    }
+
+    public void Select(Transform card)
+    {
+        selected = card;
     }
 
     void Place(Transform card, int order)
@@ -60,11 +83,14 @@ public class PlayerScript : MonoBehaviour
             (int)(prep.GetChild(1).GetComponent<CardScript>().color.color)
         };
         manager.CastSpell(cardColors);
-        foreach (Transform child in prep) {
+        foreach (Transform child in prep)
+        {
             GameObject.Destroy(child.gameObject);
         }
 
     }
+    
+    
 
     // public void Pass()
     // {
