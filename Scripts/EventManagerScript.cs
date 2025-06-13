@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class EventManagerScript : MonoBehaviour
 {
@@ -28,6 +29,9 @@ public class EventManagerScript : MonoBehaviour
     [SerializeField]
     GameObject canvas;
 
+    [SerializeField]
+    TMP_Text text;
+
     void Start()
     {
         this.InitializeStarterDeck();
@@ -39,7 +43,7 @@ public class EventManagerScript : MonoBehaviour
     void InitializeCamera()
     {
         this.mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
-        this.mainCamera.transform.rotation = Quaternion.Euler(mainCamera.transform.rotation.x, mainCamera.transform.rotation.y, 360/players.Length*(currentPlayerId+1));
+        this.mainCamera.transform.rotation = Quaternion.Euler(mainCamera.transform.rotation.x, mainCamera.transform.rotation.y, 360/players.Length*(currentPlayerId));
     }
 
     void InitializeEffects()
@@ -81,7 +85,8 @@ public class EventManagerScript : MonoBehaviour
 
     int AsignFirstPlayer()
     {
-        currentPlayerId = (new System.Random()).Next(0, players.Length);
+        //currentPlayerId = (new System.Random()).Next(0, players.Length);
+        currentPlayerId = 0;
         return currentPlayerId;
     }
 
@@ -100,7 +105,7 @@ public class EventManagerScript : MonoBehaviour
     {
         players[currentPlayerId].GetComponent<PlayerScript>().turn = false;
         this.IncrementPlayerId();
-        this.mainCamera.transform.rotation = Quaternion.Euler(mainCamera.transform.rotation.x, mainCamera.transform.rotation.y, 360/players.Length*(currentPlayerId+1));
+        this.mainCamera.transform.rotation = Quaternion.Euler(mainCamera.transform.rotation.x, mainCamera.transform.rotation.y, 360/players.Length*(currentPlayerId));
         players[currentPlayerId].GetComponent<PlayerScript>().turn = true;
     }
 
@@ -125,12 +130,12 @@ public class EventManagerScript : MonoBehaviour
 
     public void CastSpell(int[] cardTypes)
     {
-        //text = pairEffects[cardTypes[0], cardTypes[1]]
-        StartCoroutine(Wait());
-        //text = "";
+        text.text = pairEffects[cardTypes[0], cardTypes[1]];
+        //StartCoroutine(Wait());
+        //text.text = "";
     }
     IEnumerator Wait()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(4000f);
     }
 }
