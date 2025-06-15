@@ -31,6 +31,10 @@ public class EventManagerScript : MonoBehaviour
 
     [SerializeField]
     TMP_Text text;
+    void Update()
+    {
+        text = GameObject.FindWithTag("text").GetComponent<TMP_Text>();
+    }
 
     void Start()
     {
@@ -98,7 +102,7 @@ public class EventManagerScript : MonoBehaviour
 
     public void TurnEnded()
     {
-        Debug.Log(currentPlayerId);
+        text.text = "";
         this.ChangeTurn();
     }
     void ChangeTurn()

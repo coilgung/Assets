@@ -27,7 +27,6 @@ public class CardScript : MonoBehaviour
         transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z);
     }
     void OnMouseOver(){
-            Debug.Log("AAAAAAAAA");
         if (Input.GetMouseButtonDown(0) && transform.parent.tag == "Hand")
         {
             if (!transform.parent.parent.GetComponent<PlayerScript>().turn) return;
