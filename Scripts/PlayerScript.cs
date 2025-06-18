@@ -5,7 +5,7 @@ using System.Linq;
 public class PlayerScript : MonoBehaviour
 {
     [SerializeField]
-    public float radius;
+    float radius;
     public Transform hand;
     public Transform prep;
     public bool turn;
@@ -15,14 +15,7 @@ public class PlayerScript : MonoBehaviour
 
     void Start()
     {
-
-        foreach (Transform child in transform)
-        {
-            if (child.tag == "Hand")
-                hand = child;
-            if (child.tag == "Prep")
-                prep = child;
-        }
+        this.InitializeChilds();
         turn = false;
 
     }
@@ -30,7 +23,7 @@ public class PlayerScript : MonoBehaviour
     void Update()
     {
         VisualizeHand(hand, 6, turn);
-        VisualizeHand(prep, 6);
+        VisualizePrep(prep, 6);
         if (selected == null || !turn)
         {
             return;
@@ -49,7 +42,31 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
+    void InitializeChilds()
+    {
+        foreach (Transform child in transform)
+        {
+            if (child.tag == "Hand")
+                hand = child;
+            if (child.tag == "Prep")
+                prep = child;
+        }
+    }
     void VisualizeHand(Transform holder, int minWidth, bool visible = true)
+    {
+        int holdLen = holder.childCount;
+        int width = holdLen;
+        for (int i = 0; i < holdLen; i++)
+        {
+            holder.GetChild(i).position = new Vector3(
+                (holder.position.x - width / 2 + width / holdLen * ((float)i + ((holdLen % 2 == 0) ? 0.5f : 0f))) * Mathf.Max(minWidth, holdLen) / 4, holder.position.y + this.radius/(holdLen/2+1)*(holdLen/2-Mathf.Abs(i-holdLen/2)-((holdLen+1)%2)*(i)/(holdLen/2+holdLen%2)), holder.position.z
+            );
+            holder.GetChild(i).GetComponent<SpriteRenderer>().enabled = visible;
+            holder.GetChild(i).GetComponent<SpriteRenderer>().sortingOrder = i;
+        }
+    }
+
+    void VisualizePrep(Transform holder, int minWidth, bool visible = true)
     {
         int holdLen = holder.childCount;
         int width = holdLen;
