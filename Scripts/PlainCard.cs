@@ -14,7 +14,6 @@ public class PlainCard : MonoBehaviour
     void Update()
     {
         mousepos = cam.ScreenToWorldPoint(Input.mousePosition);
-        Debug.Log(mousepos);
         if (held)
         {
             transform.position = new Vector3(
@@ -26,12 +25,10 @@ public class PlainCard : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             held = false;
-            Debug.Log("C");
         }
     }
     void OnMouseOver()
     {
-        Debug.Log("A");
         distance = new Vector3(
             transform.position.x - mousepos.x,
             transform.position.y - mousepos.y,
@@ -40,7 +37,6 @@ public class PlainCard : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             held = true;
-            Debug.Log("B");
         }
     }
 }
