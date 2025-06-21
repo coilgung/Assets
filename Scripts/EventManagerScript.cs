@@ -10,6 +10,9 @@ public class EventManagerScript : MonoBehaviour
     public StarterDeck starterDeck;
 
     [SerializeField]
+    int maxActions;
+
+    [SerializeField]
     GameObject[] players;
 
     [SerializeField]
@@ -38,6 +41,7 @@ public class EventManagerScript : MonoBehaviour
 
     void Start()
     {
+        this.maxActions = 1;
         this.InitializeStarterDeck();
         this.InitializePlayers();
         this.InitializeCamera();
@@ -74,12 +78,17 @@ public class EventManagerScript : MonoBehaviour
     {
         players = GameObject.FindGameObjectsWithTag("Player");
         this.AsignFirstPlayer();
-        for (int j = 0; j < 1; j++)
+        for (int j = 0; j < players.Length; j++)
         {
-            players[j].GetComponent<PlayerScript>().manager = gameObject.GetComponent<EventManagerScript>();
-            this.GiveAll();
+            players[j].GetComponent<PlayerScript>().SetManager(gameObject.GetComponent<EventManagerScript>());
         }
-        players[currentPlayerId].GetComponent<PlayerScript>().turn = true;
+        this.GiveAll();
+        players[currentPlayerId].GetComponent<PlayerScript>().TakeTurn();
+    }
+
+    public int getMaxActions()
+    {
+        return this.maxActions;
     }
 
     void IncrementPlayerId()
@@ -107,10 +116,10 @@ public class EventManagerScript : MonoBehaviour
     }
     void ChangeTurn()
     {
-        players[currentPlayerId].GetComponent<PlayerScript>().turn = false;
+        players[currentPlayerId].GetComponent<PlayerScript>().EndTurn();
         this.IncrementPlayerId();
         this.mainCamera.transform.rotation = Quaternion.Euler(mainCamera.transform.rotation.x, mainCamera.transform.rotation.y, 360/players.Length*(currentPlayerId));
-        players[currentPlayerId].GetComponent<PlayerScript>().turn = true;
+        players[currentPlayerId].GetComponent<PlayerScript>().TakeTurn();
     }
 
     void GiveAll()

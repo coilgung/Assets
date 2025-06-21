@@ -5,41 +5,57 @@ using System.Linq;
 public class PlayerScript : MonoBehaviour
 {
     [SerializeField]
-    float radius;
-    public Transform hand;
-    public Transform prep;
-    public bool turn;
-    public EventManagerScript manager;
+    float mainRadius;
+    Transform hand;
+    Transform prep;
 
+    [SerializeField]
+    bool turn;
+
+    [SerializeField]
+    EventManagerScript manager;
+
+    [SerializeField]
     Transform selected;
+
+    [SerializeField]
+    int actionsLeft;
 
     void Start()
     {
         this.InitializeChilds();
         turn = false;
-
     }
 
     void Update()
     {
-        VisualizeHand(hand, 6, turn);
+        VisualizeHand(hand, turn);
         VisualizePrep(prep, 6);
-        if (selected == null || !turn)
+        if (this.CantPlaceCard())
         {
             return;
         }
-        if (Input.GetMouseButtonDown(0))
+        ChooseCardPlacement();
+        
+    }
+
+    void ChooseCardPlacement()
+    {
+        if (Input.GetKeyDown(KeyCode.D))
         {
-            if (transform.position.x - Input.mousePosition.x < 0)
-            {
-                Place(selected, prep.childCount);
-                selected = null;
-                return;
-            }
+            Place(selected, prep.childCount);
+            return;
+        }
+        else if (Input.GetKeyDown(KeyCode.A))
+        {
             Place(selected, 0);
-            selected = null;
             return;
         }
+    }
+
+    bool CantPlaceCard()
+    {
+        return (selected == null || !turn || this.actionsLeft <= 0 || prep.childCount >=2);
     }
 
     void InitializeChilds()
@@ -52,14 +68,27 @@ public class PlayerScript : MonoBehaviour
                 prep = child;
         }
     }
-    void VisualizeHand(Transform holder, int minWidth, bool visible = true)
+    void VisualizeHand(Transform holder, bool visible = true)
     {
+        float radius = this.mainRadius;
         int holdLen = holder.childCount;
-        int width = holdLen;
+        float angleStep = 120f / (holdLen + 1);
+        float initialAngle = 30f;
         for (int i = 0; i < holdLen; i++)
         {
+            radius = mainRadius;
+            if (selected)
+            {
+                if (holder.GetChild(i).gameObject == selected.gameObject)
+                {
+                    radius = 1.2f * mainRadius;
+                }
+            }
+            float angle = (initialAngle + (i + 1) * angleStep) * Mathf.Deg2Rad;
+            float x = Mathf.Cos(angle) * radius;
+            float y = Mathf.Sin(angle) * radius;
             holder.GetChild(i).position = new Vector3(
-                (holder.position.x - width / 2 + width / holdLen * ((float)i + ((holdLen % 2 == 0) ? 0.5f : 0f))) * Mathf.Max(minWidth, holdLen) / 4, holder.position.y + this.radius/(holdLen/2+1)*(holdLen/2-Mathf.Abs(i-holdLen/2)-((holdLen+1)%2)*(i)/(holdLen/2+holdLen%2)), holder.position.z
+                holder.position.x + x, holder.position.y + y, holder.position.z
             );
             holder.GetChild(i).GetComponent<SpriteRenderer>().enabled = visible;
             holder.GetChild(i).GetComponent<SpriteRenderer>().sortingOrder = i;
@@ -76,10 +105,25 @@ public class PlayerScript : MonoBehaviour
                 (holder.position.x - width / 2 + width / holdLen * ((float)i + ((holdLen % 2 == 0) ? 0.5f : 0f))) * Mathf.Max(minWidth, holdLen) / 4, holder.position.y, holder.position.z
             );
             holder.GetChild(i).GetComponent<SpriteRenderer>().enabled = visible;
-            holder.GetChild(i).GetComponent<SpriteRenderer>().sortingOrder = i;
+            holder.GetChild(i).GetComponent<SpriteRenderer>().sortingOrder = 0;
         }
     }
 
+    public void TakeTurn()
+    {
+        this.turn = true;
+        this.actionsLeft = this.manager.getMaxActions();
+    }
+
+    public void EndTurn()
+    {
+        this.turn = false;
+    }
+
+    public void SetManager(EventManagerScript eventManagerScript)
+    {
+        this.manager = eventManagerScript;
+    }
     public void Select(Transform card)
     {
         selected = card;
@@ -89,11 +133,27 @@ public class PlayerScript : MonoBehaviour
     {
         card.SetParent(prep);
         card.SetSiblingIndex(order);
+        this.CardPlaced();
+    }
+
+    public bool IsItTurn()
+    {
+        return this.turn;
+    }
+
+    void CardPlaced()
+    {
+        this.actionsLeft--;
+    }
+
+    void SpellCasted()
+    {
+        this.actionsLeft--;
     }
 
     public void Cast()
     {
-        if (!turn || prep.childCount < 2) return;
+        if (CantCastSpell()) return;
 
         int[] cardColors = new int[2]{
             (int)(prep.GetChild(0).GetComponent<CardScript>().color.color),
@@ -104,7 +164,12 @@ public class PlayerScript : MonoBehaviour
         {
             GameObject.Destroy(child.gameObject);
         }
+        this.SpellCasted();
+    }
 
+    bool CantCastSpell()
+    {
+        return (!turn || prep.childCount < 2 || this.actionsLeft <= 0);
     }
     
     

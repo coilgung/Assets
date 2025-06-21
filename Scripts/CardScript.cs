@@ -5,7 +5,7 @@ public class CardScript : MonoBehaviour
     public ColorScript color;
     SpriteRenderer spriteRenderer;
     [SerializeField]
-    public GameObject cam;
+    GameObject cam;
 
     void Awake()
     {
@@ -22,14 +22,12 @@ public class CardScript : MonoBehaviour
     void Update()
     {
         SetColor();
-        transform.rotation = Quaternion.Euler(transform.rotation.x, transform.rotation.y, cam.transform.rotation.z*180f);
-        //Debug.Log(cam.transform.rotation.z*180f);
-        transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+        transform.rotation = transform.parent.rotation;
     }
     void OnMouseOver(){
         if (Input.GetMouseButtonDown(0) && transform.parent.tag == "Hand")
         {
-            if (!transform.parent.parent.GetComponent<PlayerScript>().turn) return;
+            if (!transform.parent.parent.GetComponent<PlayerScript>().IsItTurn()) return;
             transform.parent.parent.GetComponent<PlayerScript>().Select(transform);
         }
     }
