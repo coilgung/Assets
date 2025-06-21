@@ -6,9 +6,14 @@ public abstract class SpellEffect : ScriptableObject
     [SerializeField]
     protected int duration;
 
-    public abstract void OnHit(PlayerScript player);
+    public abstract void OnHit(PlayerScript caster, PlayerScript target, SpellEffect spell);
 
-    public abstract void OnTurn(PlayerScript player);
+    public abstract void OnTurn(PlayerScript caster, PlayerScript target, SpellEffect spell);
 
-    public abstract void OnCast(PlayerScript player);
+    public abstract void OnCast(PlayerScript caster, PlayerScript target, SpellEffect spell);
+
+    public void BlockSpell()
+    {
+        this.duration = 0;
+    }
 }
