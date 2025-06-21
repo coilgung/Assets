@@ -27,7 +27,7 @@ public class EventManagerScript : MonoBehaviour
     [SerializeField]
     GameObject mainCamera;
 
-    string[,] pairEffects;
+    SpellEffect[,] pairEffects;
 
     [SerializeField]
     GameObject canvas;
@@ -56,23 +56,7 @@ public class EventManagerScript : MonoBehaviour
 
     void InitializeEffects()
     {
-        pairEffects = new string[3, 3] {
-            {
-                "TAKE A CARD!",
-                "DOUBLE TAKE!",
-                "EXTRA TAKE!"
-            },
-            {
-                "DISPELL!",
-                "STUN!",
-                "STEAL!"
-            },
-            {
-                "REACTION TAKE",
-                "REACTION STUN?!",
-                "SHIELD"
-            }
-        };
+        pairEffects = new SpellEffect[3, 3];
     }
     void InitializePlayers()
     {
@@ -125,30 +109,25 @@ public class EventManagerScript : MonoBehaviour
     void GiveAll()
     {
         foreach(GameObject player in players){
-            foreach (Transform child in player.transform)
+            for (int i = 0; i < initialHandCardNumber; i++)
             {
-                if (child.tag == "Hand")
-                {
-                    for (int i = 0; i < initialHandCardNumber; i++)
-                    {
-                        GameObject newCard = Instantiate(CardPrefab);
-                        newCard.GetComponent<CardScript>().color = deckScript.GiveCard();
-                        newCard.transform.parent = child;
-                    }
-                    break;
-                }
+                GiveCard(player.GetComponent<PlayerScript>());
             }
         }
     }
-
+    public void GiveCard(PlayerScript player)
+    {
+        foreach (Transform child in player.transform)
+        {
+            if (child.tag == "Hand")
+            {
+                GameObject newCard = Instantiate(CardPrefab);
+                newCard.GetComponent<CardScript>().color = deckScript.GiveCard();
+                newCard.transform.parent = child;
+            }
+        }
+    }
     public void CastSpell(int[] cardTypes)
     {
-        text.text = pairEffects[cardTypes[0], cardTypes[1]];
-        //StartCoroutine(Wait());
-        //text.text = "";
-    }
-    IEnumerator Wait()
-    {
-        yield return new WaitForSeconds(4000f);
     }
 }

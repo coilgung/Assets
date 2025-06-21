@@ -4,12 +4,9 @@ public class CardScript : MonoBehaviour
 {
     public ColorScript color;
     SpriteRenderer spriteRenderer;
-    [SerializeField]
-    GameObject cam;
 
     void Awake()
     {
-        cam = GameObject.FindWithTag("MainCamera");
         spriteRenderer = this.GetComponent<SpriteRenderer>();
         SetColor();
     }

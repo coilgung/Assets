@@ -21,6 +21,8 @@ public class PlayerScript : MonoBehaviour
     [SerializeField]
     int actionsLeft;
 
+    List<SpellEffect> spellsEffects;
+
     void Start()
     {
         this.InitializeChilds();
@@ -171,13 +173,9 @@ public class PlayerScript : MonoBehaviour
     {
         return (!turn || prep.childCount < 2 || this.actionsLeft <= 0);
     }
-    
-    
 
-    // public void Pass()
-    // {
-    //     if (!turn) return;
-    //     Debug.Log("passing");
-    //     manager.TurnEnded();
-    // }
+    public void TakeCard()
+    {
+        this.manager.GiveCard(this);
+    }
 }
